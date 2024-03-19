@@ -3,7 +3,6 @@ import { UpdateUserDto } from "./dto/update-user.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Users } from "./entities/user.entity";
 import { Repository } from "typeorm";
-import { UpdatehostDto } from "./dto/update-token";
 
 
 @Injectable()
@@ -33,22 +32,19 @@ export class UsersService {
     return await this.userRepository.update(userId, updateUserDto);
   }
 
-  async tokenupdate(updatehostDto : UpdatehostDto, user : Users) {
-    const { emailtoken } = updatehostDto;
+  async tokenupdate(email : string) {
+    const user = await this.userRepository.findOne({ where : { email }});
 
     if(!user){
       throw new Error("유저가 존재하지 않습니다.");
     }
 
-    if(user.emailtoken !== emailtoken){
-      throw new Error("인증번호가 맞지 않습니다.");
-    }
-
-    if(user.IsVaildated){
+    if(user.IsVaildated === true){
       throw new Error("이미 호스트 인증을 받으셨습니다.");
     }
 
-    return await this.userRepository.update(updatehostDto)
+    user.IsVaildated = true
+    return await this.userRepository.save(user);
   }
 
   async remove(userId : number) {

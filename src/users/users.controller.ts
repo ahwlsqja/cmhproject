@@ -12,7 +12,6 @@ import { UpdateUserDto } from "./dto/update-user.dto";
 import { UserInfo } from 'src/utils/userInfo.decorator';
 import { Users } from './entities/user.entity';
 import { AuthGuard } from '@nestjs/passport';
-import { UpdatehostDto } from './dto/update-token';
 
 
 @Controller("users")
@@ -46,17 +45,17 @@ export class UsersController {
   @UseGuards(AuthGuard("jwt"))
   @Patch("token")
   async tokenupdate(
-    @Body() email: string,
-    emailtoken: string,
-    @Body() updatehostDto: UpdatehostDto,
+    @Body() body ,
     @UserInfo() user: Users,
   ) {
+    const email = body.email;
+    const emailtoken = body.emailtoken;
 
     if(emailtoken !== user.emailtoken){
       throw new Error("인증 번호가 맞지 않습니다.");
     }
     
-    return await this.usersService.tokenupdate(email, updatehostDto);
+    return await this.usersService.tokenupdate(email);
   }
 
   @UseGuards(AuthGuard('jwt'))

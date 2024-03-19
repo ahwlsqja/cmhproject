@@ -3,7 +3,6 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { compare, hash } from 'bcrypt';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
-import { UpdatehostDto } from 'src/users/dto/update-token';
 
 import { Users } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
@@ -58,7 +57,7 @@ export class AuthService {
       }
 
 
-      async findemail( email : string){
+      async findemail( email : string ){
         return await this.authrepository.findOne({ where : { email } });
       }
       
