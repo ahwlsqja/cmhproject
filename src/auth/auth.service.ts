@@ -31,7 +31,7 @@ export class AuthService {
             name
         });
         await this.authrepository.save(users);
-
+        console.log();
         return users;
       }
       
