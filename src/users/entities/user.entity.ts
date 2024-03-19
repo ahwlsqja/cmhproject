@@ -12,7 +12,7 @@ export class Users extends BaseModel {
   @Column('varchar',{ name: "email", nullable: false })
   email: string;
 
-  @Column('varchar',{ name: "password", nullable: false, select : true })
+  @Column('varchar',{ name: "password", nullable: false })
   password: string;
   
   @Column('varchar',{ name: "name", nullable: false })

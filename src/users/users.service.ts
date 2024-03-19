@@ -1,10 +1,9 @@
 import { Injectable } from "@nestjs/common"
-import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Users } from "./entities/user.entity";
 import { Repository } from "typeorm";
-import { compare, hash } from "bcrypt";
+import { UpdatehostDto } from "./dto/update-token";
 
 
 @Injectable()
@@ -13,46 +12,55 @@ export class UsersService {
   
 
   async findAll() {
-    return await this.userRepository.find();
+    return await this.userRepository.find({ select : ['id', 'email', 'name', 'emailtoken', 'createdAt', 'updatedAt', 'IsAdmin', 'IsVaildated', 'sshKey'] });
   }
 
   async findOne(id: number) {
-    const user = await this.userRepository.findOne({ where : { id }});
+    const user = await this.userRepository.findOne({ where : { id },
+    select: ['id', 'email', 'name', 'emailtoken', 'createdAt', 'updatedAt', 'IsAdmin', 'IsVaildated', 'sshKey']});
     if(!user){
       throw new Error("유저가 존재하지 않습니다.");
     }
     return user;
   }
 
-  async update(id: number, password : string, updateUserDto: UpdateUserDto) {
-    const user = await this.userRepository.findOne({ where : { id }});
-    console.log(id);
-    console.log(user);
+  async update(userId : number, updateUserDto: UpdateUserDto) {
 
-
-    if(user === null){
+    if(!userId){
       throw new Error("유저가 존재하지 않습니다.");
     }
 
-    if (!(await compare(password, user.password))) {
-      throw new Error('비밀번호를 확인해주세요.');
-    }
-
-    return await this.userRepository.update(id, updateUserDto)
+    return await this.userRepository.update(userId, updateUserDto);
   }
 
-  async remove(id: number, password : string) {
-    const user = await this.userRepository.findOne({ where : { id }});
-    
-    if(user === null){
+  async tokenupdate(updatehostDto : UpdatehostDto, user : Users) {
+    const { emailtoken } = updatehostDto;
+
+    if(!user){
       throw new Error("유저가 존재하지 않습니다.");
     }
-    
-    if (!(await compare(password, user.password))) {
-      throw new Error('비밀번호를 확인해주세요.');
+
+    if(user.emailtoken !== emailtoken){
+      throw new Error("인증번호가 맞지 않습니다.");
     }
 
-    return await this.userRepository.delete(id);
+    if(user.IsVaildated){
+      throw new Error("이미 호스트 인증을 받으셨습니다.");
+    }
+
+    return await this.userRepository.update(updatehostDto)
+  }
+
+  async remove(userId : number) {
+    return await this.userRepository.delete(userId);
+  }
+
+  async findid (id : number) {
+    return await this.userRepository.findOne({ where : { id } });
+  }
+
+  async findemail(email : string){
+    return await this.userRepository.findOne({ where : { email } });
   }
 
 }

@@ -6,16 +6,16 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import _ from 'lodash';
 import { ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
     private readonly authService: AuthService,
-    ///
     private readonly configService: ConfigService,
   ) {
     super({
-      jwtFromRequest: ExtractJwt.fromExtractors([JwtStrategy.extractJWT]),
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
       secretOrKey: configService.get('JWT_SECRET'),
     });
@@ -28,12 +28,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       if (token) {
         return token;
       }
+      return null;
     }
-    return null;
   }
   async validate(payload: any) {
-    console.log(payload);
-    const user = await this.authService.findemail(payload.sub);
+    const user = await this.authService.findemail(payload.email);
     if (_.isNil(user)) {
       throw new NotFoundException('해당하는 사용자를 찾을 수 없습니다.');
     }

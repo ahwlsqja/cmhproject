@@ -5,58 +5,64 @@ import {
   Patch,
   Param,
   Delete,
-  Req,
+  UseGuards,
 } from '@nestjs/common'
 import { UsersService } from "./users.service";
 import { UpdateUserDto } from "./dto/update-user.dto";
+import { UserInfo } from 'src/utils/userInfo.decorator';
+import { Users } from './entities/user.entity';
+import { AuthGuard } from '@nestjs/passport';
+import { UpdatehostDto } from './dto/update-token';
+
 
 @Controller("users")
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   
-
+  @UseGuards(AuthGuard('jwt'))
   @Get()
-  async findAll() {
+  async findAll(@UserInfo() user : Users) {
+
+    if(user.IsAdmin === false){
+      throw new Error("권한이 존재하지 않습니다.");
+    }
+
     return await this.usersService.findAll();
   }
 
-  @Get(":id")
+  @Get("profile/:id")
   async findOne(@Param("id") id: number) {
     return await this.usersService.findOne(id);
   }
 
-  @Patch(":id")
-  async update(@Param("id") id: number, @Body() body, updateUserDto: UpdateUserDto, @Req() req) {
-    console.log(req.sub);
-    console.log('---------');
-    console.log('---------');
-    console.log(req.users);
-    console.log(req.user);
+  @UseGuards(AuthGuard('jwt'))
+  @Patch()
+  async update(@UserInfo() user : Users, 
+  @Body() updateUserDto: UpdateUserDto) {
+    return await this.usersService.update(user.id, updateUserDto);
+  }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Patch("token")
+  async tokenupdate(
+    @Body() email: string,
+    emailtoken: string,
+    @Body() updatehostDto: UpdatehostDto,
+    @UserInfo() user: Users,
+  ) {
+
+    if(emailtoken !== user.emailtoken){
+      throw new Error("인증 번호가 맞지 않습니다.");
+    }
     
-    const password = body.password;
-    const user = req.user; 
-   
-
-    if(user !== id){
-      throw new Error("유저 아이디가 맞지 않습니다.");
-    }
-
-    return await this.usersService.update(id, password, updateUserDto);
+    return await this.usersService.tokenupdate(email, updatehostDto);
   }
 
-  @Delete(":id")
-  async remove(@Param("id") id: number, @Body() body, @Req() req) {
-    const password = body.password;
-    const user = req.users.id;
-
-    if(user !== id){
-      throw new Error("유저 아이디가 맞지 않습니다.");
-    }
-
-    return await this.usersService.remove(id, password);
+  @UseGuards(AuthGuard('jwt'))
+  @Delete()
+  async remove(@UserInfo() user : Users) {
+    return await this.usersService.remove(user.id);
   }
-
-  
 
 }

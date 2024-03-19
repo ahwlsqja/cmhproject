@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { compare, hash } from 'bcrypt';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UpdatehostDto } from 'src/users/dto/update-token';
+
 import { Users } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
 
@@ -56,25 +57,6 @@ export class AuthService {
         
       }
 
-
-      async tokenupdate(email : string, updatehostDto : UpdatehostDto) {
-        const { IsVaildated } = updatehostDto;
-        const user = await this.authrepository.findOne({ where : { email }});
-    
-        if(!user){
-          throw new Error("유저가 존재하지 않습니다.");
-        }
-    
-        if(user.IsVaildated !== IsVaildated){
-          throw new Error("인증번호가 맞지 않습니다.");
-        }
-    
-        if(user.IsVaildated){
-          throw new Error("이미 호스트 인증을 받으셨습니다.");
-        }
-    
-        return await this.authrepository.update(email, updatehostDto)
-      }
 
       async findemail( email : string){
         return await this.authrepository.findOne({ where : { email } });

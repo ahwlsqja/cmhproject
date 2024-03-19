@@ -20,6 +20,7 @@ import { ColumnsModule } from "./columns/columns.module";
 import { CommonModule } from "./common/common.module";
 import { UsersModule } from "./users/users.module";
 import { BoardMember } from "./boards/entities/boardmember.entity";
+import { JwtModule } from "@nestjs/jwt";
 
 
 @Module({
@@ -57,8 +58,8 @@ import { BoardMember } from "./boards/entities/boardmember.entity";
     CommonModule,
     UsersModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}
 //adfasfsdaf

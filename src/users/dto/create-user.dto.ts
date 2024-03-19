@@ -1,8 +1,8 @@
-import { IsNotEmpty, IsString } from "class-validator";
+import { IsEmail, IsNotEmpty, IsString } from "class-validator";
 
 export class CreateUserDto {
 
-    @IsString()
+    @IsEmail()
     @IsNotEmpty({ message : "이메일을 기재 해주세요." })
     email : string
 
@@ -15,7 +15,7 @@ export class CreateUserDto {
     passwordConfirm : string
 
     @IsString()
-    @IsNotEmpty({ message : "패스워드를 기재 해주세요." })
+    @IsNotEmpty({ message : "이름을 기재 해주세요." })
     name : string
 
 }

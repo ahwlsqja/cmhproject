@@ -1,30 +1,28 @@
-import { Body, Controller, Patch, Post } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { CreateUserDto } from 'src/users/dto/create-user.dto';
-import { UpdatehostDto } from 'src/users/dto/update-token';
+import { Body, Controller, Patch, Post, Res, UseGuards } from "@nestjs/common";
+import { AuthService } from "./auth.service";
+import { CreateUserDto } from "src/users/dto/create-user.dto";
+import { UpdatehostDto } from "src/users/dto/update-token";
+import { LoginDto } from "src/users/dto/login.dto";
+import { AuthGuard } from "@nestjs/passport";
+import { UserInfo } from "src/utils/userInfo.decorator";
+import { Users } from "src/users/entities/user.entity";
 
-@Controller('auth')
+@Controller("auth")
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post('sing-up')
+  @Post("sing-up")
   async create(@Body() createUserDto: CreateUserDto) {
     return await this.authService.create(createUserDto);
   }
 
-  @Patch("token")
-  async tokenupdate( @Body() body, updatehostDto : UpdatehostDto) {
-    const email = body.email;
-    return await this.authService.tokenupdate(email, updatehostDto);
+  @Post("login")
+  async login(@Body() loginDto: LoginDto, @Res() res) {
+    const user = await this.authService.login(
+      loginDto.email,
+      loginDto.password,
+    );
+    res.cookie("authorization", `Bearer ${user.access_token}`);
+    res.send("로그인 완료");
   }
-
-  @Post('login')
-  async login( @Body() body ){
-    const email = body.email;
-    const password = body.password;
-    
-    
-    return await this.authService.login(email, password);
-  }
-  
 }

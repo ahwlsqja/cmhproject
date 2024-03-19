@@ -1,8 +1,6 @@
-import { IsBoolean } from "class-validator";
+import { PartialType, PickType } from "@nestjs/mapped-types";
+import { Users } from "../entities/user.entity";
 
-export class UpdatehostDto {
-    
-    @IsBoolean()
-    IsVaildated : boolean
-
+export class UpdatehostDto extends PartialType(Users) {
+    IsVaildated?: boolean;
 }
