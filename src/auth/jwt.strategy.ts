@@ -6,7 +6,6 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import _ from 'lodash';
 import { ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
-import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
