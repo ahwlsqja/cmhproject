@@ -66,19 +66,32 @@ export class CardsService {
   }
 
   // 작업자 변경  patch
-  async changeWorker (columnId: number, newUserId: number){
+  async changeWorker (columnId: number, userId: number){
     const changetask = await this.cardsRepository.findOneBy({columnId});
     
     if(!columnId) {
         throw new NotFoundException('컬럼이 존재하지 않습니다.')
     }
 
-    changetask.userId=newUserId;
+    changetask.userId=userId;
     return await this.cardsRepository.save(changetask);
   }
 
   // 칼럼 내 위치 변경  patch
+  async changeOrderByCard(id: number, newOrderByCards: number, ){
+    const findCard = await this.cardsRepository.findOneBy({id});
 
+    if(!findCard){
+      throw new NotFoundException('해당 카드가 존재하지 않습니다.')
+    }
+
+    if(newOrderByCards === findCard.orderByCards){
+      return;
+    }
+
+    findCard.orderByCards = newOrderByCards;
+    await this.cardsRepository.save(findCard);
+  }
 
 }
 
