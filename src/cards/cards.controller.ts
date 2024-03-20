@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  HttpStatus,
 } from "@nestjs/common"
 import { CardsService } from "./cards.service";
 import { CreateCardDto } from "./dto/create-card.dto";
@@ -33,10 +34,16 @@ export class CardsController {
     @Param('columnId') columnId: number,
     @Body() CreateCardDto: CreateCardDto,
   ) {
-    await this.cardsService.createCard(
+    const data = await this.cardsService.createCard(
       Users.id,
       CreateCardDto.content,
     );
+    
+    return{
+      statusCode: HttpStatus.OK,  //200
+      message: "카드 생성에 성공하였습니다.",
+      data,
+    }
   }
 
   // 카드 수정 / 담당자 변경
@@ -45,11 +52,17 @@ export class CardsController {
     @Param('id') id: number,
     @Body() UpdateCardDto: UpdateCardDto,
   ) {
-    await this.cardsService.updateCard(
+    const data = await this.cardsService.updateCard(
       id,
       UpdateCardDto.title,
       UpdateCardDto.content,
     );
+
+    return{
+      statusCode: HttpStatus.OK,  //200
+      message: "카드가 수정 되었습니다.",
+      data,
+    }
   }
 
   // 카드 삭제
@@ -57,6 +70,11 @@ export class CardsController {
   async deleteCard( 
     @Param('id') id: number) {
     await this.cardsService.deleteCard(id, Users.id);
+
+    return{
+      statusCode: HttpStatus.OK,  //200
+      message: "카드가 삭제 되었습니다.",
+    }
   }
 
   // 작업자 할당
@@ -65,10 +83,16 @@ export class CardsController {
     @Param('id') id:number,
     @Body () AssignDto : AssignDto,
   ){
-    await this.cardsService.assignWorker(
+    const data = await this.cardsService.assignWorker(
       id,
       AssignDto.tag
     )
+
+    return{
+      statusCode: HttpStatus.OK,  //200
+      message: "작업자 할당에 성공하였습니다.",
+      data,
+    }
   }
 
   // 작업자 변경
@@ -77,10 +101,16 @@ export class CardsController {
     @Param('id') id:number,
     @Body () changeDto : ChangeDto,
   ){
-    await this.cardsService.changeWorker(
+    const data = await this.cardsService.changeWorker(
       id,
       changeDto.tag
     )
+
+    return{
+      statusCode: HttpStatus.OK,  //200
+      message: "작업자 변경에 성공하였습니다.",
+      data,
+    }
   }
 
 
@@ -90,7 +120,13 @@ export class CardsController {
     @Param('id') id: number,
     @Param('newOrderByCards') newOrderByCards: number,
   ) {
-      await this.cardsService.changeOrderByCard(id, newOrderByCards);
+      const data = await this.cardsService.changeOrderByCard(id, newOrderByCards);
+  
+      return{
+        statusCode: HttpStatus.OK,  //200
+        message: "카드 위치 변경에 성공하였습니다.",
+        data,
+      }
   }
 }
 
