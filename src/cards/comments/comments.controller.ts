@@ -62,7 +62,7 @@ export class CommentsController {
     @Param("commentId") commentId: number,
     @Body() updateCommentDto: UpdateCommentDto,
   ) {
-    const data = this.commentsService.updateComment(
+    const data = await this.commentsService.updateComment(
       user.id,
       commentId,
       updateCommentDto,
@@ -80,7 +80,7 @@ export class CommentsController {
     @UserInfo() user: Users, // @커스텀데코레이터에서 user 정보 가져오기
     @Param("commentId") commentId: number,
   ) {
-    const data = this.commentsService.deleteComment(user.id, commentId);
+    await this.commentsService.deleteComment(user.id, commentId);
     return {
       statusCode: HttpStatus.OK,
       message: "댓글 삭제에 성공하였습니다.",
